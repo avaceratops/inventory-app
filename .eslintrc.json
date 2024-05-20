@@ -12,6 +12,7 @@
   "rules": {
     "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "no-console": "off",
+    "no-underscore-dangle": "off",
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "no-use-before-define": ["error", { "functions": false }]
   }
