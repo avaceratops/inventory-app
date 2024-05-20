@@ -1,0 +1,11 @@
+{
+  "printWidth": 80,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "plugins": [
+    "@prettier/plugin-pug",
+    "prettier-plugin-organize-attributes",
+    "prettier-plugin-tailwindcss"
+  ],
+  "attributeGroups": ["^class$", "^(id|name)$", "$DEFAULT", "^aria-"]
+}

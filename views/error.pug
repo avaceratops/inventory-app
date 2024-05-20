@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  if error && error.message
+    h1.text-2xl.font-bold= error.status
+    p= error.message
+    br
+    p.text-red-700= error.stack
+  else
+    h1.text-2xl.font-bold= title
+    p Page not found.
