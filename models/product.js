@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const { Schema } = mongoose;
 
@@ -11,8 +12,12 @@ const ProductSchema = new Schema({
   stock: { type: Number, default: 0 },
 });
 
+ProductSchema.virtual('slug').get(function slug() {
+  return slugify(this.name, { lower: true, strict: true });
+});
+
 ProductSchema.virtual('url').get(function url() {
-  return `/product/${this._id}`;
+  return `/product/${this._id}/${this.slug}`;
 });
 
 module.exports = mongoose.model('Product', ProductSchema);
