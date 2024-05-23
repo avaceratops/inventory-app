@@ -10,7 +10,7 @@ html(lang='en')
     link(rel='stylesheet', href='https://rsms.me/inter/inter.css')
     link(rel='stylesheet', href='/styles/style.css')
 
-  body
+  body.grid(class='grid-cols-[200px_1fr]')
     nav.bg-slate-700
       ul.list-none.text-center
         +navItem('Categories', '/categories')
