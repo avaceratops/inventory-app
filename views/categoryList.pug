@@ -10,6 +10,10 @@ block content
       ul.mb-6.list-none
         each category in categories 
           li
-            a(href=category.url) #{ category.name }
+            if category.name === 'Uncategorised'
+              a.uncategorised(href=category.url) #{ category.name }
+                span.text-zinc-500(class='hover:text-zinc-700') &nbsp;(Default)
+            else
+              a(href=category.url) #{ category.name }
 
     +anchorButton('Add category', '/category/create', 'blue')
