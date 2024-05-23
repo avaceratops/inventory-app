@@ -1,0 +1,21 @@
+extends layout
+
+include mixins/anchorButton
+include mixins/formField
+include mixins/hiddenField
+include mixins/submitButton
+
+block content
+  main
+    h1.mb-4.text-2xl.font-bold= title
+
+    form.flex.max-w-xs.flex-col.gap-4(method='POST')
+      - const nameError = errors && errors.find((e) => e.path === 'name');
+
+      +formField('Name', 'text', 'name', category, nameError)(required)
+      +formField('Description', 'textarea', 'desc', category)
+      +hiddenField('url', url)
+
+      section.grid.grid-cols-2.gap-2.self-end
+        +anchorButton('Cancel', url)
+        +submitButton('Save', 'submit', 'blue')

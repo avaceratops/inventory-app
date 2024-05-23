@@ -1,0 +1,15 @@
+extends layout
+
+include mixins/anchorButton
+
+block content
+  main
+    h1.mb-4.text-2xl.font-bold Categories
+
+    if categories
+      ul.mb-6.list-none
+        each category in categories 
+          li
+            a(href=category.url) #{ category.name }
+
+    +anchorButton('Add category', '/category/create', 'blue')
