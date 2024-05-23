@@ -27,8 +27,8 @@ async function main() {
   mongoose.connection.close();
 }
 
-async function categoryCreate(index, name) {
-  const category = new Category({ name, desc: 'This is a description.' });
+async function categoryCreate(index, name, desc = 'This is a description.') {
+  const category = new Category({ name, desc });
   await category.save();
   categories[index] = category;
   console.log(`Added category: ${name}`);
@@ -62,7 +62,11 @@ async function productCreate(index, name, category, subcategory, price, stock) {
 async function createCategories() {
   console.log('Adding categories');
   await Promise.all([
-    categoryCreate(0, 'Uncategorised'),
+    categoryCreate(
+      0,
+      'Uncategorised',
+      'All items which do not belong to a user-defined category.'
+    ),
     categoryCreate(1, 'Warhammer 40,000'),
     categoryCreate(2, 'Warhammer Age of Sigmar'),
     categoryCreate(3, 'Citadel Colour'),
@@ -89,7 +93,7 @@ async function createProducts() {
     productCreate(
       4,
       'Layer: Temple Guard Blue',
-      categories[2],
+      categories[3],
       undefined,
       275,
       21
