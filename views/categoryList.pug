@@ -11,8 +11,8 @@ block content
         each category in categories 
           li
             if category.name === 'Uncategorised'
-              a.uncategorised(href=category.url) #{ category.name }
-                span.text-zinc-500(class='hover:text-zinc-700') &nbsp;(Default)
+              a.text-zinc-500(class='hover:text-zinc-700', href=category.url) #{ category.name }
+                span &nbsp;(Default)
             else
               a(href=category.url) #{ category.name }
 
