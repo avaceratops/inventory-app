@@ -62,29 +62,30 @@ async function productCreate(index, name, category, subcategory, price, stock) {
 async function createCategories() {
   console.log('Adding categories');
   await Promise.all([
-    categoryCreate(0, 'Warhammer 40,000'),
-    categoryCreate(1, 'Warhammer Age of Sigmar'),
-    categoryCreate(2, 'Citadel Colour'),
+    categoryCreate(0, 'Uncategorised'),
+    categoryCreate(1, 'Warhammer 40,000'),
+    categoryCreate(2, 'Warhammer Age of Sigmar'),
+    categoryCreate(3, 'Citadel Colour'),
   ]);
 }
 
 async function createSubcategories() {
   console.log('Adding subcategories');
   await Promise.all([
-    subcategoryCreate(0, 'Aeldari', categories[0]),
-    subcategoryCreate(1, 'Blood Angels', categories[0]),
-    subcategoryCreate(2, 'Nighthaunt', categories[1]),
-    subcategoryCreate(3, 'Seraphon', categories[1]),
+    subcategoryCreate(0, 'Aeldari', categories[1]),
+    subcategoryCreate(1, 'Blood Angels', categories[1]),
+    subcategoryCreate(2, 'Nighthaunt', categories[2]),
+    subcategoryCreate(3, 'Seraphon', categories[2]),
   ]);
 }
 
 async function createProducts() {
   console.log('Adding products');
   await Promise.all([
-    productCreate(0, 'Avatar of Khaine', categories[0], subcategories[0], 6500),
-    productCreate(1, 'Commander Dante', categories[0], subcategories[1], 2750),
-    productCreate(2, 'Black Coach', categories[1], subcategories[2], 8500, 5),
-    productCreate(3, 'Kroxigor', categories[1], subcategories[3], 3750, 4),
+    productCreate(0, 'Avatar of Khaine', categories[1], subcategories[0], 6500),
+    productCreate(1, 'Commander Dante', categories[1], subcategories[1], 2750),
+    productCreate(2, 'Black Coach', categories[2], subcategories[2], 8500, 5),
+    productCreate(3, 'Kroxigor', categories[2], subcategories[3], 3750, 4),
     productCreate(
       4,
       'Layer: Temple Guard Blue',
