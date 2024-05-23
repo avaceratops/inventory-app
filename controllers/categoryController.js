@@ -8,7 +8,13 @@ const Product = require('../models/product');
 
 // display list of all categories
 exports.category_list = asyncHandler(async (req, res) => {
-  const categories = await Category.find().sort({ name: 1 }).exec();
+  const categories = await Category.find().exec();
+  // sort categories alphabetically, with Uncategorised coming first for visibility
+  categories.sort((a, b) => {
+    if (a.name === 'Uncategorised') return -1;
+    if (b.name === 'Uncategorised') return 1;
+    return a.name.localeCompare(b.name);
+  });
   res.render('categoryList', { title: 'Categories', categories });
 });
 
