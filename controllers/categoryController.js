@@ -34,12 +34,12 @@ exports.category_detail = asyncHandler(async (req, res, next) => {
   });
 });
 
-// displays the add category form
+// display the add category form
 exports.category_create_get = (req, res) => {
   res.render('categoryForm', { title: 'Add category', url: '/categories' });
 };
 
-// validates and adds new categories to the database
+// validate and add new category to the database
 exports.category_create_post = [
   body('name', 'Category name must contain at least 3 characters')
     .trim()
@@ -72,7 +72,7 @@ exports.category_create_post = [
   }),
 ];
 
-// displays the delete category form
+// display the delete category form
 exports.category_delete_get = asyncHandler(async (req, res, next) => {
   const category = await Category.findById(req.params.id).exec();
   if (category === null) {
@@ -84,7 +84,7 @@ exports.category_delete_get = asyncHandler(async (req, res, next) => {
   return res.render('categoryDelete', { category });
 });
 
-// handles category deletion
+// delete category from the database
 exports.category_delete_post = asyncHandler(async (req, res, next) => {
   // make sure the Uncategorised category exists
   // otherwise we can't update subcategories/products
@@ -122,7 +122,7 @@ exports.category_delete_post = asyncHandler(async (req, res, next) => {
   }
 });
 
-// displays the edit category form
+// display the edit category form
 exports.category_edit_get = asyncHandler(async (req, res, next) => {
   const category = await Category.findById(req.params.id).exec();
   if (category === null) {
@@ -143,7 +143,7 @@ exports.category_edit_get = asyncHandler(async (req, res, next) => {
   });
 });
 
-// updates edited category
+// update edited category in the database
 exports.category_edit_post = [
   body('name')
     .trim()
