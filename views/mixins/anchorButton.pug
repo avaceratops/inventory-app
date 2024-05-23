@@ -1,0 +1,11 @@
+mixin anchorButton(text, dest, color)
+  - let colors;
+  if (color === 'blue')
+    - colors = 'bg-blue-600 hover:bg-blue-700 focus-visible:ring-blue-500/50 active:bg-blue-800';
+  else
+    - colors = 'bg-red-600 hover:bg-red-700 focus-visible:ring-red-500/50 active:bg-red-800';
+
+  a.inline-block.rounded-lg.px-8.py-2.text-center.font-semibold.text-white(
+    class=`${colors} hover:text-white focus-visible:outline-none focus-visible:ring`,
+    href=dest
+  )= text
