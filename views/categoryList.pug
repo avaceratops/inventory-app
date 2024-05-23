@@ -6,7 +6,7 @@ block content
   main
     h1.mb-4.text-2xl.font-bold Categories
 
-    if categories
+    if categories.length
       ul.mb-6.list-none
         each category in categories 
           li
@@ -15,5 +15,7 @@ block content
                 span &nbsp;(Default)
             else
               a(href=category.url) #{ category.name }
+    else
+      p.mb-4 No categories found.
 
     +anchorButton('Add category', '/category/create', 'blue')
