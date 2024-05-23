@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 body {
-  padding: 16px;
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
 }
@@ -16,4 +15,36 @@ h5,
 h6,
 p {
   overflow-wrap: break-word;
+}
+
+main {
+  padding: 16px;
+}
+
+input,
+select,
+textarea {
+  @apply mt-1 block w-full rounded-lg border border-zinc-400 bg-zinc-50 px-2 py-1.5 font-normal outline-none;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  @apply border-blue-500 shadow-lg shadow-blue-500/10 ring-1 ring-blue-500;
+}
+
+a {
+  @apply text-blue-500;
+}
+
+a:hover {
+  @apply text-blue-700;
+}
+
+a.uncategorised {
+  @apply text-red-500;
+}
+
+a.uncategorised:hover {
+  @apply text-red-700;
 }
