@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require('express-validator');
 
 const categoriseProducts = require('../utils/categoriseProducts');
+const imageParser = require('../utils/uploadImage');
 
 const Category = require('../models/category');
 const Subcategory = require('../models/subcategory');
@@ -56,6 +57,7 @@ exports.product_create_get = asyncHandler(async (req, res) => {
 
 // validate and add new product to the database
 exports.product_create_post = [
+  imageParser.single('image-select'),
   body('name', 'Product name must contain at least 3 characters')
     .trim()
     .isLength({ min: 3 }),
@@ -83,10 +85,11 @@ exports.product_create_post = [
 
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
-    const { name, desc, category, subcategory, price, stock } = req.body;
+    const { name, desc, image, category, subcategory, price, stock } = req.body;
     const product = new Product({
       name,
       desc,
+      image,
       category,
     });
 
@@ -95,6 +98,8 @@ exports.product_create_post = [
     // don't add these if null, otherwise the default values won't be used
     if (price) product.price = price;
     if (stock) product.stock = stock;
+    // update image if it was successfully uploaded to Cloudinary
+    if (req.file) product.image = req.file.path;
 
     if (!errors.isEmpty()) {
       const [categories, subcategories] = await Promise.all([
@@ -108,6 +113,7 @@ exports.product_create_post = [
         categories,
         subcategories,
         url: '/products',
+        image: product.image,
         errors: errors.array(),
       });
     }
@@ -149,7 +155,7 @@ exports.product_edit_get = asyncHandler(async (req, res) => {
 
   // cache the URL for redirecting after unsuccessful POST
   // otherwise altered name would break the URL
-  const { price, url } = product;
+  const { price, url, image } = product;
 
   // convert int to float before editing, for easier parsing
   if (price) product.price = (price / 100).toFixed(2);
@@ -160,11 +166,13 @@ exports.product_edit_get = asyncHandler(async (req, res) => {
     categories,
     subcategories,
     url,
+    image,
   });
 });
 
 // update edited product in the database
 exports.product_edit_post = [
+  imageParser.single('image-select'),
   body('name', 'Product name must contain at least 3 characters')
     .trim()
     .isLength({ min: 3 }),
@@ -193,11 +201,13 @@ exports.product_edit_post = [
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     const { id } = req.params;
-    const { name, desc, category, subcategory, price, stock, url } = req.body;
+    const { name, desc, image, category, subcategory, price, stock, url } =
+      req.body;
 
     const product = new Product({
       name,
       desc,
+      image,
       category,
       subcategory: subcategory.length > 0 ? subcategory : null,
       _id: id,
@@ -208,6 +218,8 @@ exports.product_edit_post = [
     // don't add these if null, otherwise the default values won't be used
     if (price) product.price = price;
     if (stock) product.stock = stock;
+    // update image if it was successfully uploaded to Cloudinary
+    if (req.file) product.image = req.file.path;
 
     if (!errors.isEmpty()) {
       const [categories, subcategories] = await Promise.all([
@@ -221,6 +233,7 @@ exports.product_edit_post = [
         categories,
         subcategories,
         url,
+        image: product.image,
         errors: errors.array(),
       });
     }
