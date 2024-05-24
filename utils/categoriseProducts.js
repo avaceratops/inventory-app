@@ -1,11 +1,20 @@
 function sortProducts(products) {
   return products.sort((a, b) => {
-    if (a.category.name !== b.category.name) {
-      if (a.category.name === 'Uncategorised') return -1;
-      if (b.category.name === 'Uncategorised') return 1;
-      return a.category.name.localeCompare(b.category.name);
+    const aCategory = a.category.name;
+    const bCategory = b.category.name;
+    if (aCategory !== bCategory) {
+      if (aCategory === 'Uncategorised') return -1;
+      if (bCategory === 'Uncategorised') return 1;
+      return aCategory.localeCompare(bCategory);
     }
-    return a.subcategory.name.localeCompare(b.subcategory.name);
+
+    const aSubcategory = a.subcategory
+      ? a.subcategory.name
+      : '_unsubcategorised';
+    const bSubcategory = b.subcategory
+      ? b.subcategory.name
+      : '_unsubcategorised';
+    return aSubcategory.localeCompare(bSubcategory);
   });
 }
 
