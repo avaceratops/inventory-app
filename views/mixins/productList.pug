@@ -1,0 +1,5 @@
+mixin productList(subcategory)
+  each product in subcategory.products 
+    li
+      a(class!=attributes.class, href=product.url)= product.name
+        span.text-zinc-500(class='hover:text-zinc-700') &nbsp;(#{ product.stock } in stock)
