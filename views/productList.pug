@@ -1,0 +1,30 @@
+extends layout
+
+include mixins/anchorButton
+include mixins/productList
+
+block content
+  main
+    h1.mb-4.text-2xl.font-bold= title
+
+    if products.length
+      ul.mb-6
+        each category in products 
+          li
+            h2.mt-4.text-lg.font-semibold #{ category.name }
+            ul.ml-4
+              each subcategory in category.subcategories
+                - const uncategorised = category.name === 'Uncategorised' ? 'uncategorised' : '';
+                if subcategory.name === '!NoSubcategory'
+                  +productList(subcategory).text-purple-500(
+                    class=`${uncategorised} hover:text-purple-700`
+                  )
+                else
+                  li
+                    h3.font-medium= subcategory.name
+                    ul.ml-4
+                      +productList(subcategory)(class=uncategorised)
+    else
+      p.mb-6 No products found.
+
+    +anchorButton('Add product', '/product/create', 'blue')

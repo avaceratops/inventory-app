@@ -1,0 +1,51 @@
+extends layout
+
+include mixins/anchorButton
+include mixins/formField
+include mixins/hiddenField
+include mixins/submitButton
+
+block content
+  main
+    h1.mb-4.text-2xl.font-bold= title
+
+    form.flex.max-w-xs.flex-col.gap-4(method='POST')
+      - const nameError = errors && errors.find((e) => e.path === 'name');
+      - const priceError = errors && errors.find((e) => e.path === 'price');
+      - const stockError = errors && errors.find((e) => e.path === 'stock');
+      - const categoryError = errors && errors.find((e) => e.path === 'category');
+      - const subcategoryError = errors && errors.find((e) => e.path === 'subcategory');
+
+      +formField('Name', 'text', 'name', product, nameError)(required)
+      +formField('Description', 'textarea', 'desc', product)
+      +formField('Price', 'number', 'price', product, priceError)(
+        min=0,
+        pattern='^\d*(\.\d{0,2})?$',
+        step='0.01'
+      )
+      +formField('Stock', 'number', 'stock', product, stockError)(min=0)
+      +hiddenField('url', url)
+
+      +formField('Category', 'select', 'category', null, categoryError)(
+        required
+      )
+        option(value='') -- Please select a category --
+        each category in categories
+          - const selected = product && product.category && product.category._id.toString() === category._id.toString();
+          option(value=category._id, selected=selected) #{ category.name }
+
+      +formField('Subcategory', 'select', 'subcategory', null, subcategoryError)
+        option(value='')
+        each subcategory in subcategories
+          - const selected = product && product.subcategory && product.subcategory._id.toString() === subcategory._id.toString();
+          option(
+            value=subcategory._id,
+            data-category=subcategory.category,
+            selected=selected
+          ) #{ subcategory.name }
+
+      section.grid.grid-cols-2.gap-2.self-end
+        +anchorButton('Cancel', url)
+        +submitButton('Save', 'submit', 'blue')
+
+  script(src='/js/productForm.js')
