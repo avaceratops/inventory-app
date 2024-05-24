@@ -1,103 +1,23 @@
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require('express-validator');
 
+const categoriseProducts = require('../utils/categoriseProducts');
+
 const Category = require('../models/category');
 const Subcategory = require('../models/subcategory');
 const Product = require('../models/product');
 
 // display list of all products
 exports.product_list = asyncHandler(async (req, res) => {
-  // populate category and subcategory fields
-  // group products by category and subcategory
-  // sort subcategory and product arrays alphabetically
-  const products = await Product.aggregate([
-    {
-      $lookup: {
-        from: 'categories',
-        localField: 'category',
-        foreignField: '_id',
-        as: 'category',
-      },
-    },
-    {
-      $lookup: {
-        from: 'subcategories',
-        localField: 'subcategory',
-        foreignField: '_id',
-        as: 'subcategory',
-      },
-    },
-    {
-      $unwind: {
-        path: '$category',
-      },
-    },
-    {
-      $unwind: {
-        path: '$subcategory',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $addFields: {
-        category: '$category.name',
-        subcategory: {
-          $ifNull: ['$subcategory.name', '!NoSubcategory'],
-        },
-      },
-    },
-    {
-      $group: {
-        _id: {
-          category: '$category',
-          subcategory: '$subcategory',
-        },
-        products: {
-          $push: '$$ROOT',
-        },
-      },
-    },
-    {
-      $group: {
-        _id: '$_id.category',
-        subcategories: {
-          $push: {
-            name: '$_id.subcategory',
-            products: {
-              $sortArray: { input: '$products', sortBy: { name: 1 } },
-            },
-          },
-        },
-      },
-    },
-    {
-      $project: {
-        name: '$_id',
-        subcategories: {
-          $sortArray: { input: '$subcategories', sortBy: { name: 1 } },
-        },
-        _id: 0,
-      },
-    },
-  ]);
+  const products = await Product.find()
+    .populate('category subcategory')
+    .sort({ name: 1 })
+    .exec();
 
-  // sort categories alphabetically, with Uncategorised coming first for visibility
-  products.sort((a, b) => {
-    if (a.name === 'Uncategorised') return -1;
-    if (b.name === 'Uncategorised') return 1;
-    return a.name.localeCompare(b.name);
+  res.render('productList', {
+    title: 'Products',
+    products: categoriseProducts(products),
   });
-
-  // rehydrate the products arrays to enable virtual fields
-  products.forEach((category) => {
-    category.subcategories.forEach((subcategory) => {
-      subcategory.products = subcategory.products.map((product) =>
-        Product.hydrate(product)
-      );
-    });
-  });
-
-  res.render('productList', { title: 'Products', products });
 });
 
 // display information about a specific product

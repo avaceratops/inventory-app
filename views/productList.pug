@@ -15,7 +15,7 @@ block content
             ul.ml-4
               each subcategory in category.subcategories
                 - const uncategorised = category.name === 'Uncategorised' ? 'uncategorised' : '';
-                if subcategory.name === '!NoSubcategory'
+                if subcategory.name === '_unsubcategorised'
                   +productList(subcategory).text-purple-500(
                     class=`${uncategorised} hover:text-purple-700`
                   )
