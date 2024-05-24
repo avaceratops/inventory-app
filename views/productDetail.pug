@@ -9,6 +9,9 @@ block content
       if product.desc
         p= product.desc
 
+      if product.image
+        img(src=product.image)
+
       section.mt-4
         p
           span.font-bold Price:&nbsp;
