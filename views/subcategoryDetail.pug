@@ -1,0 +1,29 @@
+extends layout
+
+include mixins/anchorButton
+
+block content
+  main.flex.flex-col.gap-6
+    section
+      h1.mb-4.text-2xl.font-bold Subcategory: #{ subcategory.name }
+      if subcategory.desc
+        p= subcategory.desc
+
+      section.mt-4.grid.max-w-56.grid-cols-2.gap-2
+        +anchorButton('Delete', `${subcategory.url}/delete`)
+        +anchorButton('Edit', `${subcategory.url}/edit`, 'blue')
+
+    if category
+      hr
+      section
+        h2.mb-4.text-xl.font-bold Category
+        a(href=category.url)= category.name
+
+    if products.length
+      hr
+      section
+        h2.mb-4.text-xl.font-bold Products
+        ul.list-none
+          each product in products 
+            li
+              a(href=product.url)= product.name

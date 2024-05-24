@@ -1,0 +1,17 @@
+extends layout
+
+include mixins/anchorButton
+
+block content
+  main
+    h1.mb-4.text-2xl.font-bold= title
+
+    if subcategories.length
+      ul.mb-6.list-none
+        each subcategory in subcategories 
+          li
+            a(href=subcategory.url) #{ subcategory.name }
+    else
+      p.mb-6 No subcategories found.
+
+    +anchorButton('Add subcategory', '/subcategory/create', 'blue')

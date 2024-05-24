@@ -1,0 +1,32 @@
+extends layout
+
+include mixins/anchorButton
+include mixins/formField
+include mixins/hiddenField
+include mixins/submitButton
+
+block content
+  main
+    h1.mb-4.text-2xl.font-bold= title
+
+    form.flex.max-w-xs.flex-col.gap-4(method='POST')
+      - const nameError = errors && errors.find((e) => e.path === 'name');
+      - const categoryError = errors && errors.find((e) => e.path === 'category');
+
+      +formField('Name', 'text', 'name', subcategory, nameError)(
+        required
+      )
+      +formField('Description', 'textarea', 'desc', subcategory)
+      +hiddenField('url', url)
+
+      +formField('Category', 'select', 'category', null, categoryError)(
+        required
+      )
+        option(value='') -- Please select a category --
+        each category in categories
+          - const selected = subcategory && subcategory.category && subcategory.category._id.toString() === category._id.toString();
+          option(value=category._id, selected=selected) #{ category.name }
+
+      section.grid.grid-cols-2.gap-2.self-end
+        +anchorButton('Cancel', url)
+        +submitButton('Save', 'submit', 'blue')
