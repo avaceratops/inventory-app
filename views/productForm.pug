@@ -28,7 +28,9 @@ block content
       if image
         .image-container
           span.font-semibold Uploaded image
-          img#productImage.mt-1.w-fit(src=image)
+          img#productImage.mt-1.w-fit.rounded-lg.border.border-zinc-400.p-4(
+            src=image
+          )
           button.mt-1.rounded-sm.border.border-zinc-500.bg-zinc-100.px-2.py-1(
             class='hover:bg-zinc-200',
             type='button',
