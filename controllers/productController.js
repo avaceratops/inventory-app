@@ -62,7 +62,11 @@ exports.product_create_post = [
   body('price')
     .optional({ checkFalsy: true })
     .isFloat({ min: 0 })
-    .withMessage('Price must not be less than 0'),
+    .withMessage('Price must not be less than 0')
+    .matches(/^\d*(\.\d{0,2})?$/)
+    .withMessage(
+      'Enter the price in pounds, using up to 2 decimal places for pence (e.g. 100 or 20.99)'
+    ),
   body('stock')
     .optional({ checkFalsy: true })
     .isInt({ min: 0 })
@@ -167,7 +171,11 @@ exports.product_edit_post = [
   body('price')
     .optional({ checkFalsy: true })
     .isFloat({ min: 0 })
-    .withMessage('Price must not be less than 0'),
+    .withMessage('Price must not be less than 0')
+    .matches(/^\d*(\.\d{0,2})?$/)
+    .withMessage(
+      'Enter the price in pounds, using up to 2 decimal places for pence (e.g. 100 or 20.99)'
+    ),
   body('stock')
     .optional({ checkFalsy: true })
     .isInt({ min: 0 })
