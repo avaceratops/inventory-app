@@ -9,6 +9,8 @@ mixin formField(labelText, inputType, inputName, object, error)
           block
         else
           option(value='') Default
+    else if inputType === 'file'
+      input(type=inputType, name=inputName, id=inputName, accept!=attributes.accept)
     else if inputType === 'textarea'
       textarea.resize-none.appearance-none(
         name=inputName,
@@ -18,7 +20,7 @@ mixin formField(labelText, inputType, inputName, object, error)
         minlength!=attributes.minlength
       )!= attributes.value || (object && object[inputName])
     else
-      input.appearance-none(
+      input(
         type=inputType,
         name=inputName,
         id=inputName,
