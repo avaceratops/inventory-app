@@ -9,7 +9,7 @@ block content
   main
     h1.mb-4.text-2xl.font-bold= title
 
-    form.flex.max-w-xs.flex-col.gap-4(method='POST')
+    form.flex.flex-col.gap-4(class='xs:max-w-sm', method='POST')
       - const nameError = errors && errors.find((e) => e.path === 'name');
       - const categoryError = errors && errors.find((e) => e.path === 'category');
 
