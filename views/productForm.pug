@@ -16,7 +16,10 @@ block content
       - const categoryError = errors && errors.find((e) => e.path === 'category');
       - const subcategoryError = errors && errors.find((e) => e.path === 'subcategory');
 
-      +formField('Name', 'text', 'name', product, nameError)(required)
+      +formField('Name', 'text', 'name', product, nameError)(
+        required,
+        minlength=3
+      )
       +formField('Description', 'textarea', 'desc', product)
       +formField('Price', 'number', 'price', product, priceError)(
         min=0,

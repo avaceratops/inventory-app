@@ -14,7 +14,8 @@ block content
       - const categoryError = errors && errors.find((e) => e.path === 'category');
 
       +formField('Name', 'text', 'name', subcategory, nameError)(
-        required
+        required,
+        minlength=3
       )
       +formField('Description', 'textarea', 'desc', subcategory)
       +hiddenField('url', url)

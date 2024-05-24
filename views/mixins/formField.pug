@@ -14,7 +14,8 @@ mixin formField(labelText, inputType, inputName, object, error)
         name=inputName,
         id=inputName,
         rows='5',
-        required!=attributes.required
+        required!=attributes.required,
+        minlength!=attributes.minlength
       )!= attributes.value || (object && object[inputName])
     else
       input.appearance-none(
@@ -23,6 +24,7 @@ mixin formField(labelText, inputType, inputName, object, error)
         id=inputName,
         required!=attributes.required,
         value!=attributes.value || (object && object[inputName]),
+        minlength!=attributes.minlength,
         min!=attributes.min,
         step!=attributes.step
       )

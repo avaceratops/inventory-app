@@ -12,7 +12,10 @@ block content
     form.flex.max-w-xs.flex-col.gap-4(method='POST')
       - const nameError = errors && errors.find((e) => e.path === 'name');
 
-      +formField('Name', 'text', 'name', category, nameError)(required)
+      +formField('Name', 'text', 'name', category, nameError)(
+        required,
+        minlength=3
+      )
       +formField('Description', 'textarea', 'desc', category)
       +hiddenField('url', url)
 
