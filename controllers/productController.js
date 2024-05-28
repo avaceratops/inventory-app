@@ -132,14 +132,36 @@ exports.product_delete_get = asyncHandler(async (req, res) => {
   if (product === null) {
     return res.redirect('/products');
   }
-  return res.render('productDelete', { product });
+  return res.render('productDelete', { product, requirePassword: true });
 });
 
 // delete product from the database
-exports.product_delete_post = asyncHandler(async (req, res) => {
-  await Product.findByIdAndDelete(req.params.id);
-  res.redirect('/products');
-});
+exports.product_delete_post = [
+  body('password').custom(async (value) => {
+    if (value !== process.env.ADMIN_PASSWORD) {
+      throw new Error('Incorrect admin password');
+    }
+  }),
+
+  asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    const { id } = req.params;
+    const { password } = req.body;
+
+    if (!errors.isEmpty()) {
+      const product = await Product.findById(id).exec();
+      return res.render('productDelete', {
+        product,
+        requirePassword: true,
+        password,
+        errors: errors.array(),
+      });
+    }
+
+    await Product.findByIdAndDelete(id);
+    return res.redirect('/products');
+  }),
+];
 
 // display the edit product form
 exports.product_edit_get = asyncHandler(async (req, res) => {
@@ -165,6 +187,7 @@ exports.product_edit_get = asyncHandler(async (req, res) => {
     product,
     categories,
     subcategories,
+    requirePassword: true,
     url,
     image,
   });
@@ -197,12 +220,26 @@ exports.product_edit_post = [
       }
     }
   }),
+  body('password').custom(async (value) => {
+    if (value !== process.env.ADMIN_PASSWORD) {
+      throw new Error('Incorrect admin password');
+    }
+  }),
 
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     const { id } = req.params;
-    const { name, desc, image, category, subcategory, price, stock, url } =
-      req.body;
+    const {
+      name,
+      desc,
+      image,
+      category,
+      subcategory,
+      price,
+      stock,
+      password,
+      url,
+    } = req.body;
 
     const product = new Product({
       name,
@@ -232,6 +269,8 @@ exports.product_edit_post = [
         product,
         categories,
         subcategories,
+        requirePassword: true,
+        password,
         url,
         image: product.image,
         errors: errors.array(),

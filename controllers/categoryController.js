@@ -87,46 +87,66 @@ exports.category_delete_get = asyncHandler(async (req, res, next) => {
   if (category.default) {
     return next();
   }
-  return res.render('categoryDelete', { category });
+  return res.render('categoryDelete', { category, requirePassword: true });
 });
 
 // delete category from the database
-exports.category_delete_post = asyncHandler(async (req, res, next) => {
-  // make sure the Uncategorised category exists
-  // otherwise we can't update subcategories/products
-  const defaultCategory = await Category.getDefaultCategory();
-  if (!defaultCategory) {
-    throw new Error('Default category not found');
-  }
+exports.category_delete_post = [
+  body('password').custom(async (value) => {
+    if (value !== process.env.ADMIN_PASSWORD) {
+      throw new Error('Incorrect admin password');
+    }
+  }),
 
-  // use a transaction to ensure all operations are successful before changes are committed
-  const session = await mongoose.startSession();
-  const { id } = req.params;
-  try {
-    await session.withTransaction(async () => {
-      // update relevant subcategories to Uncategorised
-      await Subcategory.updateMany(
-        { category: id },
-        { $set: { category: defaultCategory._id } },
-        { session }
-      );
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const { id } = req.params;
+    const { password } = req.body;
 
-      // update any remaining products to Uncategorised
-      await Product.updateMany(
-        { category: id },
-        { $set: { category: defaultCategory._id } },
-        { session }
-      );
+    if (!errors.isEmpty()) {
+      const category = await Category.findById(id).exec();
+      return res.render('categoryDelete', {
+        category,
+        requirePassword: true,
+        password,
+        errors: errors.array(),
+      });
+    }
 
-      await Category.findByIdAndDelete(id).session(session);
-    });
-    res.redirect('/categories');
-  } catch (err) {
-    next(err);
-  } finally {
-    session.endSession();
-  }
-});
+    // make sure the Uncategorised category exists
+    // otherwise we can't update subcategories/products
+    const defaultCategory = await Category.getDefaultCategory();
+    if (!defaultCategory) {
+      throw new Error('Default category not found');
+    }
+
+    // use a transaction to ensure all operations are successful before changes are committed
+    const session = await mongoose.startSession();
+    try {
+      await session.withTransaction(async () => {
+        // update relevant subcategories to Uncategorised
+        await Subcategory.updateMany(
+          { category: id },
+          { $set: { category: defaultCategory._id } },
+          { session }
+        );
+
+        // update any remaining products to Uncategorised
+        await Product.updateMany(
+          { category: id },
+          { $set: { category: defaultCategory._id } },
+          { session }
+        );
+
+        await Category.findByIdAndDelete(id).session(session);
+      });
+      res.redirect('/categories');
+    } catch (err) {
+      next(err);
+    }
+    return session.endSession();
+  }),
+];
 
 // display the edit category form
 exports.category_edit_get = asyncHandler(async (req, res, next) => {
@@ -145,6 +165,7 @@ exports.category_edit_get = asyncHandler(async (req, res, next) => {
   return res.render('categoryForm', {
     title: 'Edit category',
     category,
+    requirePassword: true,
     url,
   });
 });
@@ -167,17 +188,24 @@ exports.category_edit_post = [
         throw new Error('Category with that name already exists');
       }
     }),
+  body('password').custom(async (value) => {
+    if (value !== process.env.ADMIN_PASSWORD) {
+      throw new Error('Incorrect admin password');
+    }
+  }),
 
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     const { id } = req.params;
-    const { name, desc, url } = req.body;
+    const { name, desc, password, url } = req.body;
     const category = new Category({ name, desc, _id: id });
 
     if (!errors.isEmpty()) {
       return res.render('categoryForm', {
         title: 'Edit category',
         category,
+        requirePassword: true,
+        password,
         url,
         errors: errors.array(),
       });

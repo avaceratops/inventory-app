@@ -66,6 +66,10 @@ block content
             selected=selected
           ) #{ subcategory.name }
 
+      if requirePassword
+        - const passwordError = errors && errors.find((e) => e.path === 'password');
+        +formField('Admin password', 'password', 'password', { password }, passwordError)
+
       section.grid.grid-cols-2.gap-2.self-end
         +anchorButton('Cancel', url)
         +submitButton('Save', 'submit', 'blue')

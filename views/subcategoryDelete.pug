@@ -1,6 +1,7 @@
 extends layout
 
 include mixins/anchorButton
+include mixins/formField
 include mixins/submitButton
 
 block content
@@ -14,8 +15,11 @@ block content
 
     section
       form.flex.flex-col.gap-4(method='POST')
-        p.font-semibold Are you sure you want to delete this subcategory? This action is irreversible.
+        if requirePassword
+          - const passwordError = errors && errors.find((e) => e.path === 'password');
+          +formField('Admin password', 'password', 'password', { password }, passwordError)
 
+        p.font-semibold Are you sure you want to delete this subcategory? This action is irreversible.
         section.grid.grid-cols-2.gap-2.self-start
           +anchorButton('Cancel', subcategory.url)
           +submitButton('Delete', 'submit', 'blue')

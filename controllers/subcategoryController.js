@@ -78,32 +78,55 @@ exports.subcategory_delete_get = asyncHandler(async (req, res) => {
   if (subcategory === null) {
     return res.redirect('/subcategories');
   }
-  return res.render('subcategoryDelete', { subcategory });
+  return res.render('subcategoryDelete', {
+    subcategory,
+    requirePassword: true,
+  });
 });
 
 // delete subcategory from the database
-exports.subcategory_delete_post = asyncHandler(async (req, res, next) => {
-  // use a transaction to ensure all operations are successful before changes are committed
-  const session = await mongoose.startSession();
-  const { id } = req.params;
-  try {
-    await session.withTransaction(async () => {
-      // remove subcategory from products where necessary
-      await Product.updateMany(
-        { subcategory: id },
-        { $unset: { subcategory: 1 } },
-        { session }
-      );
+exports.subcategory_delete_post = [
+  body('password').custom(async (value) => {
+    if (value !== process.env.ADMIN_PASSWORD) {
+      throw new Error('Incorrect admin password');
+    }
+  }),
 
-      await Subcategory.findByIdAndDelete(id).session(session);
-    });
-    res.redirect('/subcategories');
-  } catch (err) {
-    next(err);
-  } finally {
-    session.endSession();
-  }
-});
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const { id } = req.params;
+    const { password } = req.body;
+
+    if (!errors.isEmpty()) {
+      const subcategory = await Subcategory.findById(id).exec();
+      return res.render('subcategoryDelete', {
+        subcategory,
+        requirePassword: true,
+        password,
+        errors: errors.array(),
+      });
+    }
+
+    // use a transaction to ensure all operations are successful before changes are committed
+    const session = await mongoose.startSession();
+    try {
+      await session.withTransaction(async () => {
+        // remove subcategory from products where necessary
+        await Product.updateMany(
+          { subcategory: id },
+          { $unset: { subcategory: 1 } },
+          { session }
+        );
+
+        await Subcategory.findByIdAndDelete(id).session(session);
+      });
+      res.redirect('/subcategories');
+    } catch (err) {
+      next(err);
+    }
+    return session.endSession();
+  }),
+];
 
 // display the edit subcategory form
 exports.subcategory_edit_get = asyncHandler(async (req, res) => {
@@ -124,6 +147,7 @@ exports.subcategory_edit_get = asyncHandler(async (req, res) => {
     title: 'Edit subcategory',
     subcategory,
     categories,
+    requirePassword: true,
     url,
   });
 });
@@ -134,11 +158,16 @@ exports.subcategory_edit_post = [
     .trim()
     .isLength({ min: 3 }),
   body('category', 'You must select a category').trim().isLength({ min: 1 }),
+  body('password').custom(async (value) => {
+    if (value !== process.env.ADMIN_PASSWORD) {
+      throw new Error('Incorrect admin password');
+    }
+  }),
 
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     const { id } = req.params;
-    const { name, desc, category, url } = req.body;
+    const { name, desc, category, password, url } = req.body;
     const subcategory = new Subcategory({ name, desc, category, _id: id });
 
     if (!errors.isEmpty()) {
@@ -148,6 +177,8 @@ exports.subcategory_edit_post = [
         title: 'Edit subcategory',
         subcategory,
         categories,
+        requirePassword: true,
+        password,
         url,
         errors: errors.array(),
       });
